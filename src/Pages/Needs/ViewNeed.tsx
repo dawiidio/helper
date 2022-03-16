@@ -93,7 +93,7 @@ export const ViewNeed: FunctionComponent<ViewNeedProps> = ({}) => {
                 {need.quantity - need.supplied}
             </DetailsViewItem>
             <DetailsViewItem title='Jednostka miary'>
-                {NEED_UNITS.find(x => x.value = need.unit)?.label}
+                {NEED_UNITS.find(x => x.value === need.unit)?.label}
             </DetailsViewItem>
             <DetailsViewItem title='Opis'>
                 {need.description}

@@ -24,10 +24,10 @@ const schema = yup.object({
     status: yup.string().required().label('status'),
     name: yup.string().required().label('nazwa'),
     type: yup.string().required().label('typ'),
-    organizer_phone: yup.string().required().label('telefon kontaktowy'),
+    organizer_phone: yup.string().nullable().label('telefon kontaktowy'),
     organizer_email: yup.string().required().label('email kontaktowy'),
     organizer_name: yup.string().required().label('nazwa organizatora'),
-    description: yup.string().nullable(),
+    description: yup.string().required().label('opis'),
     organization_unit_id: yup.string().required().label('miejsce'),
     quantity: yup.number().required().max(100000).min(1).test('test0', 'Ilość nie może być mniejsza od ostatnio ustawionej', function(val) {
         if (this.parent.id) {
@@ -232,17 +232,6 @@ export const NeedForm: FunctionComponent<NeedFormProps> = ({
                 </Grid>
                 <Grid item xs={6}>
                     <FormTextField
-                        error={getFieldError<NeedFormData>('organizer_phone', errors)}
-                        control={control}
-                        name='organizer_phone'
-                        label='Telefon kontaktowy do organizatora'
-                        requiredStar
-                        fullWidth
-                        disabled={disableAllFields}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <FormTextField
                         error={getFieldError<NeedFormData>('organizer_email', errors)}
                         control={control}
                         name='organizer_email'
@@ -252,9 +241,25 @@ export const NeedForm: FunctionComponent<NeedFormProps> = ({
                         disabled={disableAllFields}
                     />
                 </Grid>
+                <Grid item xs={6}>
+                    <FormTextField
+                        error={getFieldError<NeedFormData>('organizer_phone', errors)}
+                        control={control}
+                        name='organizer_phone'
+                        label='Telefon kontaktowy do organizatora'
+                        fullWidth
+                        disabled={disableAllFields}
+                    />
+                </Grid>
                 <Grid item xs={12}>
                     <Typography variant='h6'>
                         Informacje szczegółowe
+                    </Typography>
+                    <Typography variant='body2'>
+                        Opis nie jest wymagany ale pamiętaj, że im lepiej określisz potrzeby i cel swojej zbiórki tym łatwiej
+                        będzie innym dostarczyć Ci potrzebne produkty :) Np. jeśli potrzebujesz naleśników to opisz jakich,
+                        przepis jest prosty ale może okazać się, że dla Ciebie oczywiste było, że naleśniki robi się na
+                        mleku roślinnym a dla kogoś innego, że na zwierzęcym.
                     </Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -276,6 +281,7 @@ export const NeedForm: FunctionComponent<NeedFormProps> = ({
                         label='Potrzebna ilość'
                         fullWidth
                         type='number'
+                        requiredStar
                         disabled={disableAllFields}
                     />
                 </Grid>
@@ -287,6 +293,7 @@ export const NeedForm: FunctionComponent<NeedFormProps> = ({
                         label='Już otrzymana ilość/pomoc'
                         fullWidth
                         type='number'
+                        requiredStar
                         disabled={disableAllFields}
                     />
                 </Grid>
@@ -301,6 +308,7 @@ export const NeedForm: FunctionComponent<NeedFormProps> = ({
                         rows={4}
                         multiline
                         disabled={disableAllFields}
+                        requiredStar
                     />
                 </Grid>
             </Grid>

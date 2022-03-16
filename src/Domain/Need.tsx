@@ -76,10 +76,6 @@ export const NEED_STATUSES: SelectItem[] = [
         value: NeedStatus.waiting,
         disabled: true
     },
-    // {
-    //     label: 'Dogrywka',
-    //     value: NeedStatus.refill,
-    // },
 ];
 
 export const NEED_UNITS: SelectItem[] = [

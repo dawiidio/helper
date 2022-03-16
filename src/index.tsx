@@ -31,6 +31,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { TermsAndConditions } from './Pages/TermsAndConditions';
 import { ViewPlace } from './Pages/Places/ViewPlace';
+import { CookiesInfo } from './Components/CookiesInfo';
 
 dayjs.locale('pl');
 dayjs.extend(utc);
@@ -70,16 +71,19 @@ ReactDOM.render(
                 <AuthListener />
                 <ThemeProvider theme={theme}>
                     <AppNotification />
+                    <CookiesInfo />
                     <HashRouter>
                         <Routes>
                             <Route path='/'>
                                 <Route path='' element={<RequireProfileFulfill><RouteLayout /></RequireProfileFulfill>}>
                                     <Route path='' element={<ListNeeds />} />
                                     <Route path='about' element={<About />} />
-                                    <Route path='terms-and-conditions' element={<TermsAndConditions />} />
                                     <Route path='places' element={<ListPlaces />} />
                                     <Route path='place/:id' element={<ViewPlace />} />
                                     <Route path='need/:id' element={<ViewNeed />} />
+                                </Route>
+                                <Route path='' element={<RouteLayout />}>
+                                    <Route path='terms-and-conditions' element={<TermsAndConditions />} />
                                 </Route>
                                 <Route path='' element={<RequireAuth><RequireProfileFulfill><RouteLayout /></RequireProfileFulfill></RequireAuth>}>
                                     <Route path='place/edit/:id' element={<EditPlace />} />
