@@ -1,6 +1,7 @@
-# Getting Started with Create React App
+# Helper
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+application to organize charity collections, was initially created in just a few days to support the charity collection
+for Ukrainian refugees in Poland.
 
 ## Available Scripts
 
