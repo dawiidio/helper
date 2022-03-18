@@ -29,13 +29,16 @@ import { EditProfile } from './Pages/Profile/EditProfile';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { TermsAndConditions } from './Pages/TermsAndConditions';
 import { ViewPlace } from './Pages/Places/ViewPlace';
 import { CookiesInfo } from './Components/CookiesInfo';
 
+
 dayjs.locale('pl');
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 const theme = createTheme({
     palette: {

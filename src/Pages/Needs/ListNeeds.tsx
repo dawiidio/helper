@@ -11,10 +11,10 @@ import { useAtomValue } from 'jotai';
 import { placesAtom } from '../../Store/place';
 import {
     Alert,
-    Autocomplete, Button,
+    Autocomplete, Box, Button,
     FormControl,
     Grid, IconButton,
-    InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
+    InputLabel, LinearProgress, LinearProgressProps, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
     MenuItem,
     Pagination,
     Select,
@@ -80,6 +80,12 @@ const PRIORITY_TO_COLOR: Record<NeedPriority, Pick<SvgIconProps, 'color'>['color
     [NeedPriority.high]: 'error',
     [NeedPriority.medium]: 'info',
     [NeedPriority.low]: 'disabled',
+};
+
+const PRIORITY_TO_PROGRESS_COLOR: Record<NeedPriority, Pick<LinearProgressProps, 'color'>['color']> = {
+    [NeedPriority.high]: 'error',
+    [NeedPriority.medium]: 'info',
+    [NeedPriority.low]: 'inherit',
 };
 
 interface ListNeedsProps {
@@ -185,6 +191,20 @@ const getStoredValue = (): boolean => {
 
 const saveValueToStore = () => {
     window.localStorage.setItem('infoHidden', 'true');
+};
+
+const getNeedPercentageProgressToEnd = (need: Need): number => {
+    let date: string = need.created_at;
+
+    if (need.start_date) {
+        date = need.start_date;
+    }
+
+    let startDate = dayjs(date);
+
+    return 100 - Math.round(
+        (dayjs(need.end_date).diff(dayjs()) / dayjs(need.end_date).diff(startDate)) * 100,
+    );
 };
 
 export const ListNeeds: FunctionComponent<ListNeedsProps> = () => {
@@ -388,6 +408,10 @@ export const ListNeeds: FunctionComponent<ListNeedsProps> = () => {
             <List>
                 {data?.map((need) => {
                     const Icon = getIcon(need.quantity, need.supplied);
+                    const daysToEnd = dayjs(need.end_date).diff(dayjs(), 'day');
+                    const daysToStart = need.start_date ? dayjs(need.start_date).diff(dayjs(), 'day', true) : 0;
+                    const showStartInfo = daysToStart > 0;
+                    const showEndInfo = daysToStart <= 0 && Boolean(need.end_date);
 
                     return (
                         <ListItem
@@ -405,13 +429,14 @@ export const ListNeeds: FunctionComponent<ListNeedsProps> = () => {
                         >
                             <ListItemButton component='a' href={`#/need/${need.id}`}>
                                 <ListItemIcon>
-                                    <Tooltip title={`Zebrano ${Math.round((need.supplied/need.quantity)*100)}%`}>
+                                    <Tooltip title={`Zebrano ${Math.round((need.supplied / need.quantity) * 100)}%`}>
                                         <Icon color={PRIORITY_TO_COLOR[need.priority]} fontSize='large' />
                                     </Tooltip>
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={<>
-                                        <ProfileNameWithTrustIcon trusted={need.profile.confirmed} variant='need'>
+                                        <ProfileNameWithTrustIcon trusted={need.profile.confirmed} variant='need'
+                                                                  color={PRIORITY_TO_PROGRESS_COLOR[need.priority]}>
                                             {need.name}
                                         </ProfileNameWithTrustIcon>
                                     </>}
@@ -427,17 +452,45 @@ export const ListNeeds: FunctionComponent<ListNeedsProps> = () => {
                                             }
                                             <br />
                                             {
-                                                need.start_date && (<>
-                                                    Start
-                                                    zbiórki: <strong>{dayjs(need.start_date).format('DD.MM.YYYY HH:mm')}</strong>
+                                                showStartInfo && (<>
+                                                    Do startu: <strong>{Math.round(daysToStart)}</strong> dni
                                                 </>)
                                             }
-
                                             {
-                                                need.end_date && (<>
-                                                    &nbsp;Zakończenie
-                                                    zbiórki: <strong>{dayjs(need.end_date).format('DD.MM.YYYY HH:mm')}</strong>
-                                                </>)
+                                                need.status === 'active' && (
+                                                    <Tooltip
+                                                        title={
+                                                            need.end_date
+                                                                ? `Zbiórka ukończona w ${getNeedPercentageProgressToEnd(need)}%, do końca pozostało ${daysToEnd} dni, zebrano ${Math.round((need.supplied / need.quantity) * 100)}% potrzebnej pomocy`
+                                                                : `Zebrano ${Math.round((need.supplied / need.quantity) * 100)}% potrzebnej pomocy`
+                                                        }
+                                                    >
+                                                        <Grid container alignItems='center'>
+                                                            <Grid item xs={12} md={3} paddingRight={1}>
+                                                                <Typography variant='body2' color={'gray'}>
+                                                                    {
+                                                                        need.end_date
+                                                                            ? <>Do
+                                                                                końca: <strong>{daysToEnd}</strong> dni</>
+                                                                            : 'Ważna bezterminowo'
+                                                                    }
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item flexGrow={1} xs={12} md={9} paddingTop={{ xs: 1, md: 0  }}>
+                                                                {
+                                                                    need.end_date
+                                                                        ? <LinearProgress
+                                                                            color={PRIORITY_TO_PROGRESS_COLOR[need.priority]}
+                                                                            value={getNeedPercentageProgressToEnd(need)}
+                                                                            variant='determinate' />
+                                                                        : <LinearProgress
+                                                                            color={PRIORITY_TO_PROGRESS_COLOR[need.priority]}
+                                                                            value={0} variant='determinate' />
+                                                                }
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Tooltip>
+                                                )
                                             }
                                         </>
                                     )}
